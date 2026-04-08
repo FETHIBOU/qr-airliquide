@@ -3,15 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manuel Digital Pro</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>Air Liquide - Suivi Concentrateur d'Oxygène</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
+        /* Variables de couleurs - Thème Clair (Défaut) */
         :root {
             --bg: #e0e5ec;
             --light-shadow: #ffffff;
             --dark-shadow: #a3b1c6;
+            --text-main: #2c3e50;
+            --text-data: #44476a;
             --accent: #007BFF;
-            --text: #31344b;
+            --logo-red: #d92323;
+        }
+
+        /* Variables pour le Dark Mode */
+        [data-theme="dark"] {
+            --bg: #1d1f23;
+            --light-shadow: #2b2e34;
+            --dark-shadow: #0f1013;
+            --text-main: #c9d1d9;
+            --text-data: #e1e8ed;
+            --accent: #4dabff;
+            --logo-red: #ff4d4d;
         }
 
         body {
@@ -22,11 +36,12 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            transition: background 0.5s ease;
             overflow: hidden;
             position: relative;
         }
 
-        /* AMÉLIORATION 1 : ARRIÈRE-PLAN ANIMÉ */
+        /* AMÉLIORATION 1 : ARRIÈRE-PLAN ANIMÉ (Blobs) */
         .background-blobs {
             position: absolute;
             width: 100%;
@@ -40,56 +55,148 @@
             width: 300px;
             height: 300px;
             border-radius: 50%;
-            background: rgba(0, 123, 255, 0.2);
+            background: rgba(0, 123, 255, 0.1);
             animation: move 20s infinite alternate;
         }
 
-        .blob.two { background: rgba(0, 255, 128, 0.1); left: 50%; animation-delay: -5s; }
+        .blob.two { background: rgba(0, 255, 128, 0.05); left: 50%; animation-delay: -5s; }
 
         @keyframes move {
             from { transform: translate(-10%, -10%); }
             to { transform: translate(20%, 20%); }
         }
 
-        /* AMÉLIORATION 2 : CARTE GLASSMORPHIC-NEUMORPHIC */
+        /* BOUTON SWITCH MODE SOMBRE */
+        .theme-switch {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 6px 6px 12px var(--dark-shadow), -6px -6px 12px var(--light-shadow);
+            font-size: 20px;
+            border: none;
+            color: var(--text-main);
+            z-index: 10;
+        }
+
+        /* AMÉLIORATION 2 : CARTE TILT (Effet Parallaxe) */
         .card {
-            background: rgba(224, 229, 236, 0.7); /* Translucide */
-            backdrop-filter: blur(10px);
-            padding: 50px;
+            background: rgba(224, 229, 236, 0.7);
+            backdrop-filter: blur(8px);
+            padding: 40px;
             border-radius: 40px;
             box-shadow: 20px 20px 60px var(--dark-shadow), -20px -20px 60px var(--light-shadow);
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
             text-align: center;
             border: 1px solid rgba(255, 255, 255, 0.4);
+            perspective: 1000px;
+            transition: transform 0.1s ease-out;
+            animation: fadeInUp 0.8s ease-out;
         }
 
-        h1 { color: var(--text); font-weight: 600; margin-bottom: 30px; }
+        /* Animation d'entrée */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-        input {
+        /* LOGO AIR LIQUIDE (Fidèle à l'image) */
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 25px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 24px;
+            letter-spacing: -1px;
+            color: var(--logo-red);
+        }
+
+        .logo-symbol {
+            margin-right: 10px;
+            position: relative;
+            width: 25px;
+            height: 25px;
+        }
+
+        .logo-symbol::before {
+            content: "AL";
+            position: absolute;
+            color: #2c3e50;
+            font-size: 16px;
+            font-weight: 700;
+            top: 4px;
+            left: 5px;
+        }
+
+        .logo-symbol::after {
+            content: "";
+            position: absolute;
+            border: 3px solid #007BFF;
             width: 100%;
-            padding: 18px;
+            height: 100%;
+            border-radius: 50%;
+            top: -3px;
+            left: -3px;
+        }
+
+        /* TITRE (Concentrateur d'Oxygène) */
+        h1 {
+            color: #2c3e50;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+        }
+
+        /* CHAMPS DE DONNÉES (Fidèle à l'image) */
+        .data-group {
             margin-bottom: 20px;
-            border: none;
+            text-align: left;
+        }
+
+        .label {
+            display: block;
+            color: #a3b1c6; /* Gris plus clair pour les labels */
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            margin-left: 10px;
+        }
+
+        .data-box {
+            width: 100%;
+            padding: 15px 20px;
             border-radius: 15px;
-            background: var(--bg);
+            background-color: var(--bg);
             box-shadow: inset 6px 6px 12px var(--dark-shadow), inset -6px -6px 12px var(--light-shadow);
-            outline: none;
-            color: var(--text);
+            color: var(--text-data);
+            font-size: 15px;
+            font-weight: 400;
             box-sizing: border-box;
         }
 
-        /* AMÉLIORATION 3 : BOUTON AVEC ÉCLAT (GLOW) */
+        /* BOUTON DE TÉLÉCHARGEMENT AMÉLIORÉ */
         .btn-download {
             display: flex;
             align-items: center;
             justify-content: center;
+            margin-top: 30px;
             padding: 20px;
-            margin-top: 10px;
             background: var(--bg);
-            color: var(--accent);
+            color: #2c3e50; /* Couleur du texte d'origine */
             text-decoration: none;
             font-weight: bold;
+            font-size: 16px;
             border-radius: 20px;
             box-shadow: 8px 8px 15px var(--dark-shadow), -8px -8px 15px var(--light-shadow);
             transition: all 0.3s ease;
@@ -97,8 +204,9 @@
         }
 
         .btn-download:hover {
-            box-shadow: 0 0 20px rgba(0, 123, 255, 0.4);
+            color: var(--accent); /* Devient bleu au survol */
             transform: translateY(-5px);
+            box-shadow: 0 0 20px rgba(0, 123, 255, 0.4);
         }
 
         .btn-download:active {
@@ -106,36 +214,69 @@
             transform: scale(0.95);
         }
 
-        .badge {
-            font-size: 10px;
-            background: var(--accent);
-            color: white;
-            padding: 2px 8px;
-            border-radius: 10px;
-            position: absolute;
-            top: -10px;
-            right: 10px;
+        .icon {
+            font-size: 1.2rem;
+            margin-right: 10px;
         }
     </style>
 </head>
-<body>
+<body data-theme="light">
 
     <div class="background-blobs">
         <div class="blob"></div>
         <div class="blob two"></div>
     </div>
 
-    <div class="card">
-        <h1>Guide Expert</h1>
+    <button class="theme-switch" onclick="toggleTheme()" title="Changer de mode">🌓</button>
+
+    <div class="card" id="card">
+        <div class="logo">
+            <div class="logo-symbol"></div>
+            Air Liquide
+        </div>
         
-        <input type="text" placeholder="Prénom">
-        <input type="email" placeholder="Email">
+        <h1>Concentrateur d'Oxygène</h1>
+
+        <div class="data-group">
+            <span class="label">Numéro de Série</span>
+            <div class="data-box">OXY-12347</div>
+        </div>
+
+        <div class="data-group">
+            <span class="label">Date d'installation</span>
+            <div class="data-box">10/04/2028</div>
+        </div>
+
+        <div class="data-group">
+            <span class="label">Prochaine Maintenance</span>
+            <div class="data-box">2027-04-11T23:00:00.000Z</div>
+        </div>
 
         <a href="https://script.google.com/macros/s/AKfycbzmrvqe6z6NlzXmPgXS1HdFMwSm-cwScS2W7IcsQXzrvqYv5OTiCP6pdzkvZxWD3U0/exec" target="_blank" class="btn-download">
-            <span class="badge">NOUVEAU</span>
-            📥 TÉLÉCHARGER LE MANUEL
+            <span class="icon">📥</span> Télécharger le Manuel
         </a>
     </div>
 
+    <script>
+        // Gestion du Mode Sombre
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            body.setAttribute('data-theme', currentTheme === 'light' ? 'dark' : 'light');
+        }
+
+        // Effet de Tilt (Inclinaison 3D au mouvement de souris)
+        const card = document.getElementById('card');
+        document.addEventListener('mousemove', (e) => {
+            let xAxis = (window.innerWidth / 2 - e.pageX) / 20;
+            let yAxis = (window.innerHeight / 2 - e.pageY) / 20;
+            card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+        });
+
+        // Reset de l'inclinaison quand la souris sort
+        document.addEventListener('mouseleave', () => {
+            card.style.transform = `rotateY(0deg) rotateX(0deg)`;
+        });
+    </script>
 </body>
 </html>
