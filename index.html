@@ -3,100 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Téléchargement du Manuel</title>
-    
+    <title>Téléchargement Manuel d'utilisation</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-    
     <style>
-        /* Définition des couleurs pour le Neumorphisme */
         :root {
-            --bg-color: #e0e5ec; /* Gris bleuté très doux */
-            --shadow-light: #ffffff; /* Lumière venant d'en haut à gauche */
-            --shadow-dark: #a3b1c6; /* Ombre portée en bas à droite */
-            --text-main: #31344b; /* Gris anthracite pour le texte principal */
-            --text-accent: #007BFF; /* Bleu pour l'interaction */
+            --bg-color: #e0e5ec;
+            --shadow-light: #ffffff;
+            --shadow-dark: #a3b1c6;
+            --accent-blue: #007BFF;
         }
 
-        /* Corps de la page */
         body {
             font-family: 'Poppins', sans-serif;
-            margin: 0;
-            padding: 0;
             background-color: var(--bg-color);
+            margin: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 100vh; /* Centre le contenu verticalement */
+            min-height: 100vh;
         }
 
-        /* La carte principale qui contient les éléments (Effet bosselé) */
-        .neumorphic-card {
-            width: 90%;
-            max-width: 450px;
-            padding: 50px 30px;
-            border-radius: 20px;
-            background-color: var(--bg-color);
+        .container {
             text-align: center;
-            /* La magie du Neumorphisme : double ombre (claire + foncée) */
-            box-shadow: 
-                12px 12px 24px var(--shadow-dark), 
-                -12px -12px 24px var(--shadow-light);
-        }
-
-        /* Titre et texte */
-        h1 {
-            color: var(--text-main);
-            font-size: 24px;
-            margin-bottom: 15px;
-            margin-top: 0;
-        }
-
-        p {
-            color: #6b7280;
-            font-size: 15px;
-            line-height: 1.6;
-            margin-bottom: 40px;
-        }
-
-        /* Le bouton de téléchargement 3D */
-        .neumorphic-button {
-            display: inline-block;
-            padding: 16px 32px;
-            border-radius: 12px;
+            padding: 50px;
             background-color: var(--bg-color);
-            color: var(--text-main);
+            border-radius: 30px;
+            box-shadow: 20px 20px 60px var(--shadow-dark), -20px -20px 60px var(--shadow-light);
+            max-width: 500px;
+        }
+
+        h1 { color: #31344b; margin-bottom: 20px; }
+
+        /* LE BOUTON - Version haute visibilité */
+        .btn-download {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 40px;
+            margin-top: 20px;
+            background-color: var(--bg-color);
+            color: var(--accent-blue);
             text-decoration: none;
-            font-size: 16px;
             font-weight: 600;
-            transition: all 0.2s ease-in-out;
-            /* Ombre externe pour l'effet bouton non pressé */
+            font-size: 18px;
+            border-radius: 15px;
+            border: 2px solid rgba(255,255,255,0.5); /* Bordure pour le voir clairement */
+            
+            /* Effet 3D prononcé */
             box-shadow: 
-                6px 6px 12px var(--shadow-dark), 
-                -6px -6px 12px var(--shadow-light);
+                9px 9px 16px var(--shadow-dark), 
+                -9px -9px 16px var(--shadow-light);
+            transition: all 0.2s ease;
         }
 
-        /* Effet au survol : la couleur du texte change légèrement */
-        .neumorphic-button:hover {
-            color: var(--text-accent);
+        /* Effet au clic (le bouton s'enfonce) */
+        .btn-download:active {
+            box-shadow: 
+                inset 6px 6px 10px var(--shadow-dark), 
+                inset -6px -6px 10px var(--shadow-light);
+            transform: scale(0.98);
         }
 
-        /* Effet au clic (pressé) : les ombres s'inversent vers l'intérieur (inset) */
-        .neumorphic-button:active {
-            color: var(--text-accent);
-            box-shadow: 
-                inset 6px 6px 12px var(--shadow-dark), 
-                inset -6px -6px 12px var(--shadow-light);
+        /* Icône de téléchargement en CSS */
+        .icon {
+            margin-right: 15px;
+            width: 24px;
+            height: 24px;
+            border-bottom: 3px solid var(--accent-blue);
+            position: relative;
+        }
+        .icon::after {
+            content: "↓";
+            position: absolute;
+            top: -5px;
+            left: 5px;
+            font-size: 25px;
         }
     </style>
 </head>
 <body>
 
-    <div class="neumorphic-card">
-        <h1>Manuel d'utilisation</h1>
-        <p>Cliquez sur le bouton ci-dessous pour lancer le téléchargement ou consulter le script en toute sécurité.</p>
-        
-        <a href="https://script.google.com/macros/s/AKfycbzmrvqe6z6NlzXmPgXS1HdFMwSm-cwScS2W7IcsQXzrvqYv5OTiCP6pdzkvZxWD3U0/exec" target="_blank" class="neumorphic-button">
-            Télécharger le fichier
+    <div class="container">
+        <h1>Guide Officiel</h1>
+        <p>Votre document est prêt pour le téléchargement.</p>
+
+        <a href="https://script.google.com/macros/s/AKfycbzmrvqe6z6NlzXmPgXS1HdFMwSm-cwScS2W7IcsQXzrvqYv5OTiCP6pdzkvZxWD3U0/exec" target="_blank" class="btn-download">
+            <div class="icon"></div>
+            TÉLÉCHARGER LE MANUEL
         </a>
     </div>
 
