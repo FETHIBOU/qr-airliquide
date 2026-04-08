@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suivi Équipement - Air Liquide</title>
+    <style>
+        /* Importation d'une police moderne */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+        :root {
+            var(--bg-color): #e0e5ec;
+            --text-main: #2d3748;
+            --text-light: #718096;
+            --shadow-light: rgba(255, 255, 255, 0.7);
+            --shadow-dark: rgba(163, 177, 198, 0.6);
+            --brand-color: #002677; /* Bleu Air Liquide */
+        }
+
+        body {
+            background-color: #e0e5ec;
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 400px;
+            padding: 40px 30px;
+            border-radius: 25px;
+            background-color: #e0e5ec;
+            box-shadow: 10px 10px 20px var(--shadow-dark), 
+                       -10px -10px 20px var(--shadow-light);
+        }
+
+        .header {
+            margin-bottom: 35px;
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .header img {
+            height: 45px;
+        }
+
+        h1 {
+            font-size: 1.2rem;
+            color: var(--brand-color);
+            margin-bottom: 25px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .info-group {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: inset 5px 5px 10px var(--shadow-dark), 
+                        inset -5px -5px 10px var(--shadow-light);
+        }
+
+        .label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .value {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        .btn {
+            display: none; /* Caché par défaut jusqu'à ce que les données chargent */
+            width: 100%;
+            padding: 15px;
+            margin-top: 35px;
+            border: none;
+            border-radius: 15px;
+            background-color: #e0e5ec;
+            color: var(--brand-color);
+            font-weight: 600;
+            font-size: 1rem;
+            text-align: center;
+            text-decoration: none;
+            box-shadow: 8px 8px 15px var(--shadow-dark), 
+                       -8px -8px 15px var(--shadow-light);
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            box-sizing: border-box;
+        }
+
+        .btn:active {
+            box-shadow: inset 5px 5px 10px var(--shadow-dark), 
+                        inset -5px -5px 10px var(--shadow-light);
+            color: var(--text-main);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <div class="header">
+            <img src="https://www.airliquide.com/sites/airliquide.com/files/air-liquide.svg" alt="Air Liquide Logo">
+        </div>
+
+        <h1>Concentrateur d'Oxygène</h1>
+
+        <div class="info-group">
+            <div class="label">Numéro de Série</div>
+            <div class="value" id="serial-number">Chargement...</div>
+        </div>
+
+        <div class="info-group">
+            <div class="label">Date d'installation</div>
+            <div class="value" id="install-date">Chargement...</div>
+        </div>
+
+        <div class="info-group">
+            <div class="label">Prochaine Maintenance</div>
+            <div class="value" id="maintenance-date">Chargement...</div>
+        </div>
+
+        <a href="#" id="manual-link" class="btn" target="_blank">
+            📄 Télécharger le Manuel
+        </a>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            
+            // 🛑 REMPLACEZ LA LIGNE CI-DESSOUS PAR VOTRE URL APPS SCRIPT
+            const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzmrvqe6z6NlzXmPgXS1HdFMwSm-cwScS2W7IcsQXzrvqYv5OTiCP6pdzkvZxWD3U0/exec";
+
+            // 1. Lire l'URL de la page web pour trouver le code "?sn=..."
+            const urlParams = new URLSearchParams(window.location.search);
+            const sn = urlParams.get('sn');
+
+            const snField = document.getElementById('serial-number');
+            const installField = document.getElementById('install-date');
+            const maintenanceField = document.getElementById('maintenance-date');
+            const manualBtn = document.getElementById('manual-link');
+
+            // 2. Si aucun QR code/numéro n'est scanné
+            if (!sn) {
+                snField.innerText = "Veuillez scanner un QR Code";
+                installField.innerText = "-";
+                maintenanceField.innerText = "-";
+                return;
+            }
+
+            snField.innerText = "Recherche en cours...";
+
+            // 3. Interroger le Google Sheet avec le numéro de série
+            fetch(`${APPS_SCRIPT_URL}?sn=${sn}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        snField.innerText = "Machine introuvable";
+                        installField.innerText = "-";
+                        maintenanceField.innerText = "-";
+                    } else {
+                        // 4. Afficher les données sur la page
+                        snField.innerText = data.sn;
+                        installField.innerText = data.install_date;
+                        maintenanceField.innerText = data.maintenance_date;
+                        
+                        // Configurer et afficher le bouton du manuel
+                        manualBtn.href = data.manual_link;
+                        manualBtn.style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    console.error("Erreur:", error);
+                    snField.innerText = "Erreur de connexion";
+                });
+        });
+    </script>
+</body>
+</html>
