@@ -3,205 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Suivi Équipement - Air Liquide</title>
+    <title>Téléchargement du Manuel</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
-
+        /* Définition des couleurs pour le Neumorphisme */
         :root {
-            --bg-color: #e0e5ec;
-            --text-main: #2d3748;
-            --text-light: #718096;
-            --shadow-light: rgba(255, 255, 255, 0.7);
-            --shadow-dark: rgba(163, 177, 198, 0.6);
-            --brand-color: #002677; /* Bleu Air Liquide */
-            --alert-color: #d9534f; /* Rouge pour la réclamation */
+            --bg-color: #e0e5ec; /* Gris bleuté très doux */
+            --shadow-light: #ffffff; /* Lumière venant d'en haut à gauche */
+            --shadow-dark: #a3b1c6; /* Ombre portée en bas à droite */
+            --text-main: #31344b; /* Gris anthracite pour le texte principal */
+            --text-accent: #007BFF; /* Bleu pour l'interaction */
         }
 
+        /* Corps de la page */
         body {
-            background-color: var(--bg-color);
             font-family: 'Poppins', sans-serif;
-            color: var(--text-main);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
             margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-
-        .card {
-            width: 100%;
-            max-width: 400px;
-            padding: 40px 30px;
-            border-radius: 25px;
+            padding: 0;
             background-color: var(--bg-color);
-            box-shadow: 10px 10px 20px var(--shadow-dark), 
-                       -10px -10px 20px var(--shadow-light);
-        }
-
-        .header {
-            margin-bottom: 35px;
             display: flex;
-            justify-content: flex-start;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh; /* Centre le contenu verticalement */
         }
 
-        .header img {
-            height: 45px;
-        }
-
-        h1 {
-            font-size: 1.2rem;
-            color: var(--brand-color);
-            margin-bottom: 25px;
-            text-align: center;
-            font-weight: 600;
-        }
-
-        .info-group {
-            margin-bottom: 15px;
-            padding: 15px;
-            border-radius: 15px;
-            box-shadow: inset 5px 5px 10px var(--shadow-dark), 
-                        inset -5px -5px 10px var(--shadow-light);
-        }
-
-        .label {
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: var(--text-light);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 5px;
-        }
-
-        .value {
-            font-size: 1rem;
-            font-weight: 500;
-            color: var(--text-main);
-        }
-
-        .btn {
-            display: none;
-            width: 100%;
-            padding: 15px;
-            margin-top: 20px;
-            border: none;
-            border-radius: 15px;
+        /* La carte principale qui contient les éléments (Effet bosselé) */
+        .neumorphic-card {
+            width: 90%;
+            max-width: 450px;
+            padding: 50px 30px;
+            border-radius: 20px;
             background-color: var(--bg-color);
-            color: var(--brand-color);
-            font-weight: 600;
-            font-size: 1rem;
             text-align: center;
-            text-decoration: none;
-            box-shadow: 8px 8px 15px var(--shadow-dark), 
-                       -8px -8px 15px var(--shadow-light);
-            transition: all 0.2s ease-in-out;
-            cursor: pointer;
-            box-sizing: border-box;
+            /* La magie du Neumorphisme : double ombre (claire + foncée) */
+            box-shadow: 
+                12px 12px 24px var(--shadow-dark), 
+                -12px -12px 24px var(--shadow-light);
         }
 
-        .btn-alert {
-            color: var(--alert-color); /* Applique la couleur rouge au bouton de réclamation */
-        }
-
-        .btn:active {
-            box-shadow: inset 5px 5px 10px var(--shadow-dark), 
-                        inset -5px -5px 10px var(--shadow-light);
+        /* Titre et texte */
+        h1 {
             color: var(--text-main);
+            font-size: 24px;
+            margin-bottom: 15px;
+            margin-top: 0;
+        }
+
+        p {
+            color: #6b7280;
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 40px;
+        }
+
+        /* Le bouton de téléchargement 3D */
+        .neumorphic-button {
+            display: inline-block;
+            padding: 16px 32px;
+            border-radius: 12px;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.2s ease-in-out;
+            /* Ombre externe pour l'effet bouton non pressé */
+            box-shadow: 
+                6px 6px 12px var(--shadow-dark), 
+                -6px -6px 12px var(--shadow-light);
+        }
+
+        /* Effet au survol : la couleur du texte change légèrement */
+        .neumorphic-button:hover {
+            color: var(--text-accent);
+        }
+
+        /* Effet au clic (pressé) : les ombres s'inversent vers l'intérieur (inset) */
+        .neumorphic-button:active {
+            color: var(--text-accent);
+            box-shadow: 
+                inset 6px 6px 12px var(--shadow-dark), 
+                inset -6px -6px 12px var(--shadow-light);
         }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <div class="header">
-            <img src="https://www.airliquide.com/sites/airliquide.com/files/air-liquide.svg" alt="Air Liquide Logo">
-        </div>
-
-        <h1>Concentrateur d'Oxygène</h1>
-
-        <div class="info-group">
-            <div class="label">Société</div>
-            <div class="value">Air Liquide Santé</div>
-        </div>
-
-        <div class="info-group">
-            <div class="label">Assistance SAV</div>
-            <div class="value">📞 36464600</div>
-        </div>
-
-        <div class="info-group">
-            <div class="label">Numéro de Série</div>
-            <div class="value" id="serial-number">Chargement...</div>
-        </div>
-
-        <div class="info-group">
-            <div class="label">Prochaine Maintenance</div>
-            <div class="value" id="maintenance-date">Chargement...</div>
-        </div>
-
-        <a href="#" id="manual-link" class="btn" target="_blank">
-            📄 Manuel d'utilisation
-        </a>
-
-        <a href="#" id="claim-link" class="btn btn-alert">
-            ✉️ Envoyer une réclamation
+    <div class="neumorphic-card">
+        <h1>Manuel d'utilisation</h1>
+        <p>Cliquez sur le bouton ci-dessous pour lancer le téléchargement ou consulter le script en toute sécurité.</p>
+        
+        <a href="https://script.google.com/macros/s/AKfycbzmrvqe6z6NlzXmPgXS1HdFMwSm-cwScS2W7IcsQXzrvqYv5OTiCP6pdzkvZxWD3U0/exec" target="_blank" class="neumorphic-button">
+            Télécharger le fichier
         </a>
     </div>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            
-            // 🛑 1. REMETTEZ VOTRE URL APPS SCRIPT ICI
-            const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzmrvqe6z6NlzXmPgXS1HdFMwSm-cwScS2W7IcsQXzrvqYv5OTiCP6pdzkvZxWD3U0/exec";
-            
-            // 🛑 2. MODIFIEZ L'ADRESSE MAIL DU SAV ICI
-            const EMAIL_SAV = "sav.contact@airliquide.com";
-
-            const urlParams = new URLSearchParams(window.location.search);
-            const sn = urlParams.get('sn');
-
-            const snField = document.getElementById('serial-number');
-            const maintenanceField = document.getElementById('maintenance-date');
-            const manualBtn = document.getElementById('manual-link');
-            const claimBtn = document.getElementById('claim-link');
-
-            if (!sn) {
-                snField.innerText = "Veuillez scanner un QR Code";
-                maintenanceField.innerText = "-";
-                return;
-            }
-
-            snField.innerText = "Recherche en cours...";
-
-            fetch(`${APPS_SCRIPT_URL}?sn=${sn}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.error) {
-                        snField.innerText = "Machine introuvable";
-                        maintenanceField.innerText = "-";
-                    } else {
-                        // Afficher les données
-                        snField.innerText = data.sn;
-                        maintenanceField.innerText = data.maintenance_date;
-                        
-                        // Configurer le bouton Manuel
-                        manualBtn.href = data.manual_link;
-                        manualBtn.style.display = 'block';
-
-                        // Configurer le bouton Réclamation (Génère le mail automatiquement)
-                        const subject = encodeURIComponent(`Réclamation - Concentrateur ${data.sn}`);
-                        const body = encodeURIComponent(`Bonjour,\n\nJe souhaite signaler un problème ou faire une réclamation concernant le concentrateur d'oxygène (Numéro de série : ${data.sn}).\n\nMerci de me recontacter.\n\nCordialement,`);
-                        claimBtn.href = `mailto:${EMAIL_SAV}?subject=${subject}&body=${body}`;
-                        claimBtn.style.display = 'block';
-                    }
-                })
-                .catch(error => {
-                    console.error("Erreur:", error);
-                    snField.innerText = "Erreur de connexion";
-                });
-        });
-    </script>
 </body>
 </html>
