@@ -96,6 +96,7 @@
             border: 1px solid rgba(255, 255, 255, 0.4);
             transition: transform 0.1s ease-out;
             animation: fadeInUp 0.8s ease-out;
+            perspective: 1000px;
         }
 
         @keyframes fadeInUp {
@@ -118,12 +119,12 @@
             width: 30px;
             height: 30px;
             border: 4px solid #0055a4;
-            border-radius: 50% 50% 0 50%; /* Forme approchante du logo Air Liquide */
+            border-radius: 50% 50% 0 50%;
             display: inline-block;
         }
 
         h1 {
-            color: #002d5d;
+            color: var(--text-main);
             font-size: 1.4rem;
             margin-bottom: 35px;
             font-weight: 600;
@@ -164,13 +165,18 @@
             margin-top: 35px;
             padding: 22px;
             background: var(--bg);
-            color: #2c3e50;
+            color: var(--text-main);
             text-decoration: none;
             font-weight: 700;
             font-size: 16px;
             border-radius: 20px;
             box-shadow: 10px 10px 20px var(--dark-shadow), -10px -10px 20px var(--light-shadow);
             transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            width: 100%;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
         }
 
         .btn-download:hover {
@@ -194,7 +200,7 @@
         <div class="blob two"></div>
     </div>
 
-    <button class="theme-switch" onclick="toggleTheme()">🌓</button>
+    <button class="theme-switch" onclick="toggleTheme()" title="Changer de mode">🌓</button>
 
     <div class="card" id="card">
         <div class="logo">
@@ -219,18 +225,52 @@
             <div class="data-box">2027-04-11T23:00:00.000Z</div>
         </div>
 
-        <a href="#" id="downloadLink" target="_blank" class="btn-download">
+        <button id="downloadLink" class="btn-download">
             <span class="icon">📄</span> Télécharger le Manuel
-        </a>
+        </button>
     </div>
 
     <script>
-        // 1. GESTION DU LIEN DYNAMIQUE (Évite l'erreur "introuvable")
-        const scriptURL = "https://script.google.com/macros/s/AKfycbzmrvqe6z6NlzXmPgXS1HdFMwSm-cwScS2W7IcsQXzrvqYv5OTiCP6pdzkvZxWD3U0/exec";
+        // 1. LE BOUTON INTELLIGENT (Connexion avec l'API Google Script)
+        const downloadBtn = document.getElementById('downloadLink');
         const serial = document.getElementById('serialText').innerText.trim();
-        document.getElementById('downloadLink').href = `${scriptURL}?id=${serial}`;
+        
+        downloadBtn.addEventListener('click', function(event) {
+            event.preventDefault(); // Empêche le comportement par défaut
 
-        // 2. GESTION DU THÈME
+            // Création de l'URL avec le bon paramètre "?sn="
+            const scriptURL = `https://script.google.com/macros/s/AKfycbzmrvqe6z6NlzXmPgXS1HdFMwSm-cwScS2W7IcsQXzrvqYv5OTiCP6pdzkvZxWD3U0/exec?sn=${serial}`;
+            
+            // Effet visuel pendant le chargement
+            const originalText = this.innerHTML;
+            this.innerHTML = `<span class="icon">⏳</span> Recherche en cours...`;
+            this.style.pointerEvents = "none"; // Empêche le double-clic
+
+            // Requête vers le fichier Google Sheet
+            fetch(scriptURL)
+                .then(response => response.json())
+                .then(data => {
+                    // Remise à zéro du bouton une fois la réponse reçue
+                    this.innerHTML = originalText;
+                    this.style.pointerEvents = "auto";
+
+                    if (data.error) {
+                        alert("⚠️ Erreur : " + data.error);
+                    } else if (data.manual_link) {
+                        // Ouvre le lien du manuel dans un nouvel onglet !
+                        window.open(data.manual_link, '_blank');
+                    } else {
+                        alert("⚠️ Aucun manuel n'est enregistré pour cette machine.");
+                    }
+                })
+                .catch(error => {
+                    this.innerHTML = originalText;
+                    this.style.pointerEvents = "auto";
+                    alert("⚠️ Erreur de connexion avec le serveur.");
+                });
+        });
+
+        // 2. GESTION DU THÈME SOMBRE
         function toggleTheme() {
             const body = document.body;
             const currentTheme = body.getAttribute('data-theme');
