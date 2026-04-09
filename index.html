@@ -6,15 +6,16 @@
     <title>VitalAire & Air Liquide - Smart Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
+        /* --- VARIABLES --- */
         :root {
             --bg: #e0e5ec; --light-shadow: #ffffff; --dark-shadow: #a3b1c6;
             --text-main: #2c3e50; --text-data: #44476a;
-            --accent: #007BFF; --danger: #d92323; --success: #28a745;
+            --accent: #007BFF; --danger: #d92323; --success: #28a745; --warning: #f39c12;
         }
         [data-theme="dark"] {
             --bg: #1d1f23; --light-shadow: #2b2e34; --dark-shadow: #0f1013;
             --text-main: #c9d1d9; --text-data: #e1e8ed;
-            --accent: #4dabff; --danger: #ff4d4d; --success: #00e676;
+            --accent: #4dabff; --danger: #ff4d4d; --success: #00e676; --warning: #f1c40f;
         }
 
         body {
@@ -23,19 +24,14 @@
             display: flex; justify-content: center; align-items: flex-start;
             min-height: 100vh; transition: background 0.5s ease;
         }
-        
-        /* Gère la police arabe et l'inversion d'affichage */
         body[dir="rtl"] { font-family: 'Cairo', sans-serif; }
 
-        /* HEADER CONTROLS (Langues & Thème) */
         .controls { position: fixed; top: 15px; width: 90%; max-width: 600px; display: flex; justify-content: space-between; z-index: 100; left: 50%; transform: translateX(-50%); }
         .lang-selector select, .theme-switch {
             background: var(--bg); color: var(--text-main); border: none; padding: 10px 15px; border-radius: 15px;
-            box-shadow: 4px 4px 8px var(--dark-shadow), -4px -4px 8px var(--light-shadow);
-            font-weight: 600; cursor: pointer; outline: none; font-family: inherit;
+            box-shadow: 4px 4px 8px var(--dark-shadow), -4px -4px 8px var(--light-shadow); font-weight: 600; cursor: pointer; outline: none;
         }
 
-        /* CARTE PRINCIPALE */
         .card {
             background: rgba(224, 229, 236, 0.8); backdrop-filter: blur(10px);
             padding: 40px 30px; border-radius: 30px; margin-top: 60px;
@@ -44,38 +40,56 @@
         }
 
         .logos-container { display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 20px; }
-        .logo-al { font-weight: 700; font-size: 18px; color: var(--danger); display: flex; align-items: center; }
+        .logo-al { font-weight: 700; font-size: 18px; color: var(--danger); }
         .logo-vitalaire { height: 22px; }
         [data-theme="dark"] .logo-vitalaire { filter: brightness(0) invert(1); }
 
         h1 { text-align: center; font-size: 1.4rem; margin-bottom: 5px; }
-        .status-badge { display: flex; align-items: center; justify-content: center; padding: 8px; border-radius: 20px; font-size: 12px; font-weight: 700; margin: 0 auto 30px auto; width: max-content; background: var(--bg); box-shadow: inset 3px 3px 6px var(--dark-shadow), inset -3px -3px 6px var(--light-shadow); }
+        .status-badge { display: flex; align-items: center; justify-content: center; padding: 8px 15px; border-radius: 20px; font-size: 12px; font-weight: 700; margin: 0 auto 30px auto; width: max-content; background: var(--bg); box-shadow: inset 3px 3px 6px var(--dark-shadow), inset -3px -3px 6px var(--light-shadow); }
         .status-dot { width: 10px; height: 10px; border-radius: 50%; margin: 0 8px; background-color: gray; }
 
-        /* GRILLE DE DONNÉES */
         .data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
         .full-width { grid-column: 1 / -1; }
         .label { font-size: 11px; font-weight: 700; color: #a3b1c6; text-transform: uppercase; margin-bottom: 5px; display: block; padding: 0 10px; }
-        .data-box { padding: 12px 15px; border-radius: 12px; background: var(--bg); box-shadow: inset 4px 4px 8px var(--dark-shadow), inset -4px -4px 8px var(--light-shadow); font-weight: 600; font-size: 14px; min-height: 45px; display: flex; align-items: center;}
+        .data-box { padding: 12px 15px; border-radius: 12px; background: var(--bg); box-shadow: inset 4px 4px 8px var(--dark-shadow), inset -4px -4px 8px var(--light-shadow); font-weight: 600; font-size: 14px; min-height: 45px; display: flex; align-items: center; position: relative; overflow: hidden;}
 
-        /* HISTORIQUE ACCORDÉON */
-        .history-box { background: var(--bg); border-radius: 15px; padding: 15px; margin-bottom: 20px; box-shadow: 4px 4px 8px var(--dark-shadow), -4px -4px 8px var(--light-shadow); cursor: pointer; font-weight: 600; font-size: 14px; display: flex; justify-content: space-between; align-items: center; }
-        .history-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; font-size: 13px; color: var(--text-data); padding: 0 10px; }
-        .history-item { padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.1); }
-        [data-theme="dark"] .history-item { border-bottom: 1px solid rgba(255,255,255,0.1); }
+        /* --- 1. NOUVEAU : EFFET SKELETON (Chargement) --- */
+        .skeleton {
+            background: linear-gradient(90deg, var(--bg) 25%, var(--dark-shadow) 50%, var(--bg) 75%);
+            background-size: 200% 100%;
+            animation: loadingPulse 1.5s infinite;
+            color: transparent !important;
+            border-radius: 5px;
+        }
+        @keyframes loadingPulse {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
 
-        /* BOUTONS */
-        .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .btn { padding: 15px; border-radius: 15px; background: var(--bg); border: none; font-weight: 700; cursor: pointer; box-shadow: 6px 6px 12px var(--dark-shadow), -6px -6px 12px var(--light-shadow); color: var(--text-main); font-family: inherit; display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 13px;}
+        /* --- 2. NOUVEAU : ZONE TECHNICIEN CACHÉE --- */
+        .tech-panel { display: none; margin-top: 20px; border-top: 2px dashed var(--dark-shadow); padding-top: 20px;}
+        .history-item { padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.1); font-size: 13px; color: var(--text-data);}
+
+        /* ACTIONS */
+        .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px;}
+        .btn { padding: 12px; border-radius: 12px; background: var(--bg); border: none; font-weight: 700; cursor: pointer; box-shadow: 6px 6px 12px var(--dark-shadow), -6px -6px 12px var(--light-shadow); color: var(--text-main); display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 13px;}
         .btn:active { box-shadow: inset 4px 4px 8px var(--dark-shadow), inset -4px -4px 8px var(--light-shadow); }
-        .btn-full { grid-column: 1 / -1; color: var(--danger); }
-        .btn-blue { color: var(--accent); }
+        .btn-full { grid-column: 1 / -1; }
+        .text-danger { color: var(--danger); } .text-blue { color: var(--accent); } .text-warning { color: var(--warning); }
 
-        /* MODALES (Pop-up Formulaire & Vidéo) */
+        /* MODALES */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { background: var(--bg); padding: 30px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center; }
-        .modal input, .modal textarea { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: none; background: var(--bg); box-shadow: inset 3px 3px 6px var(--dark-shadow), inset -3px -3px 6px var(--light-shadow); color: var(--text-main); outline: none; box-sizing: border-box; }
+        .modal input, .modal textarea { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: none; background: var(--bg); box-shadow: inset 3px 3px 6px var(--dark-shadow), inset -3px -3px 6px var(--light-shadow); color: var(--text-main); outline: none; }
         .modal iframe { width: 100%; height: 250px; border: none; border-radius: 15px; margin-bottom: 15px; }
+
+        /* --- 3. NOUVEAU : CSS POUR L'IMPRESSION PDF --- */
+        @media print {
+            body { background: white; padding: 0; }
+            .card { box-shadow: none; border: 2px solid #000; padding: 20px; margin: 0; }
+            .controls, .actions, .theme-switch, .tech-lock-btn { display: none !important; }
+            .tech-panel { display: block !important; border-top: 1px solid #000; }
+        }
     </style>
 </head>
 <body data-theme="light">
@@ -100,7 +114,7 @@
         <h1 data-i18n="title">Concentrateur d'Oxygène</h1>
         <div class="status-badge">
             <span class="status-dot" id="statusDot"></span>
-            <span id="statusText" data-i18n="loading">Chargement...</span>
+            <span id="statusText" data-i18n="loading">Recherche en cours...</span>
         </div>
 
         <div class="data-grid">
@@ -110,32 +124,36 @@
             </div>
             <div>
                 <span class="label" data-i18n="model">Modèle</span>
-                <div class="data-box" id="modelText">---</div>
+                <div class="data-box skeleton" id="modelText">chargement</div>
             </div>
             <div>
                 <span class="label" data-i18n="flow">Débit configuré</span>
-                <div class="data-box" id="flowText">---</div>
+                <div class="data-box skeleton" id="flowText">chargement</div>
             </div>
             <div class="full-width">
                 <span class="label" data-i18n="install">Date d'installation</span>
-                <div class="data-box" id="installText">---</div>
+                <div class="data-box skeleton" id="installText">chargement</div>
             </div>
             <div class="full-width">
                 <span class="label" data-i18n="maint">Prochaine Maintenance</span>
-                <div class="data-box" id="maintenanceText">---</div>
+                <div class="data-box skeleton" id="maintenanceText">chargement</div>
             </div>
         </div>
-
-        <div class="history-box" onclick="toggleHistory()">
-            <span data-i18n="history">Historique des interventions</span> <span>▼</span>
-        </div>
-        <div class="history-content" id="historyList">
-            </div>
 
         <div class="actions">
-            <button id="downloadLink" class="btn btn-blue" onclick="openManual()"><span data-i18n="btnDoc">Manuel</span></button>
+            <button class="btn text-blue" onclick="openManual()"><span data-i18n="btnDoc">Manuel</span></button>
             <button class="btn" onclick="openVideo()"><span data-i18n="btnVideo">Tutoriel</span></button>
-            <button class="btn btn-full" onclick="openReportModal()"><span data-i18n="btnReport">Signaler un incident</span></button>
+            <button class="btn btn-full text-danger" onclick="openReportModal()"><span data-i18n="btnReport">Signaler incident</span></button>
+        </div>
+
+        <br>
+        
+        <button class="btn btn-full tech-lock-btn text-warning" onclick="unlockTechMode()">🔒 Accès Technicien</button>
+
+        <div class="tech-panel" id="techPanel">
+            <h3 style="font-size: 14px; margin-bottom: 10px;" data-i18n="history">Historique & Rapports</h3>
+            <div id="historyList"></div>
+            <button class="btn btn-full" style="margin-top: 15px;" onclick="window.print()">🖨️ Générer Fiche PDF</button>
         </div>
     </div>
 
@@ -151,33 +169,28 @@
             <h2 data-i18n="formTitle">Signaler un problème</h2>
             <input type="email" id="reportEmail" placeholder="Votre Email" required>
             <textarea id="reportMessage" rows="4" placeholder="Décrivez le problème..." required></textarea>
-            <div class="actions">
-                <button class="btn" onclick="closeModals()" data-i18n="cancel">Annuler</button>
-                <button class="btn btn-blue" onclick="submitReport()" data-i18n="send">Envoyer</button>
+            <div class="actions" style="display:flex;">
+                <button class="btn" style="flex:1;" onclick="closeModals()" data-i18n="cancel">Annuler</button>
+                <button class="btn text-blue" style="flex:1;" onclick="submitReport()" data-i18n="send">Envoyer</button>
             </div>
         </div>
     </div>
 
     <script>
-        // --- 1. CONFIG ET LECTURE DU NUMÉRO DE SÉRIE VIA L'URL ---
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzmrvqe6z6NlzXmPgXS1HdFMwSm-cwScS2W7IcsQXzrvqYv5OTiCP6pdzkvZxWD3U0/exec";
-        
-        // C'EST LA MAGIE DES QR CODES : Lit ?sn=xxx dans l'adresse web
         const urlParams = new URLSearchParams(window.location.search);
-        const serialNumber = urlParams.get('sn') || "OXY-12347"; // OXY-12347 si aucun paramètre
+        const serialNumber = urlParams.get('sn') || "OXY-12347";
         document.getElementById('serialText').innerText = serialNumber;
 
         let manualUrl = ""; let videoUrl = ""; let isStatusOk = true;
 
-        // --- 2. DICTIONNAIRE MULTILINGUE ---
         const dict = {
-            fr: { title: "Concentrateur d'Oxygène", loading: "Recherche...", sn: "Numéro de Série", model: "Modèle", flow: "Débit configuré", install: "Date d'installation", maint: "Prochaine Maintenance", history: "Historique des interventions", btnDoc: "Manuel PDF", btnVideo: "Tutoriel Vidéo", btnReport: "Signaler un incident", statusOk: "EN SERVICE (CONFORME)", statusWarn: "MAINTENANCE REQUISE", formTitle: "Détail de la panne", send: "Envoyer", cancel: "Annuler", close: "Fermer" },
-            en: { title: "Oxygen Concentrator", loading: "Searching...", sn: "Serial Number", model: "Model", flow: "Flow Rate", install: "Installation Date", maint: "Next Maintenance", history: "Maintenance History", btnDoc: "PDF Manual", btnVideo: "Video Tutorial", btnReport: "Report Incident", statusOk: "IN SERVICE (COMPLIANT)", statusWarn: "MAINTENANCE REQUIRED", formTitle: "Issue Details", send: "Send", cancel: "Cancel", close: "Close" },
-            ar: { title: "مُكثّف الأكسجين", loading: "جاري البحث...", sn: "الرقم التسلسلي", model: "الموديل", flow: "معدل التدفق", install: "تاريخ التركيب", maint: "الصيانة القادمة", history: "سجل الصيانة", btnDoc: "تحميل الدليل", btnVideo: "فيديو تعليمي", btnReport: "الإبلاغ عن عطل", statusOk: "في الخدمة (مطابق)", statusWarn: "صيانة مطلوبة", formTitle: "تفاصيل العطل", send: "إرسال", cancel: "إلغاء", close: "إغلاق" }
+            fr: { title: "Concentrateur d'Oxygène", loading: "Recherche...", sn: "Numéro de Série", model: "Modèle", flow: "Débit", install: "Date d'installation", maint: "Prochaine Maintenance", history: "Historique & Rapports", btnDoc: "Manuel", btnVideo: "Tutoriel", btnReport: "Signaler un incident", statusOk: "EN SERVICE (CONFORME)", statusWarn: "MAINTENANCE REQUISE", formTitle: "Détail de la panne", send: "Envoyer", cancel: "Annuler", close: "Fermer" },
+            en: { title: "Oxygen Concentrator", loading: "Searching...", sn: "Serial Number", model: "Model", flow: "Flow Rate", install: "Installation Date", maint: "Next Maintenance", history: "History & Reports", btnDoc: "Manual", btnVideo: "Video", btnReport: "Report Incident", statusOk: "IN SERVICE (COMPLIANT)", statusWarn: "MAINTENANCE REQUIRED", formTitle: "Issue Details", send: "Send", cancel: "Cancel", close: "Close" },
+            ar: { title: "مُكثّف الأكسجين", loading: "جاري البحث...", sn: "الرقم التسلسلي", model: "الموديل", flow: "معدل التدفق", install: "تاريخ التركيب", maint: "الصيانة القادمة", history: "سجل الصيانة والتقارير", btnDoc: "الدليل", btnVideo: "فيديو", btnReport: "الإبلاغ عن عطل", statusOk: "في الخدمة (مطابق)", statusWarn: "صيانة مطلوبة", formTitle: "تفاصيل العطل", send: "إرسال", cancel: "إلغاء", close: "إغلاق" }
         };
         let currentLang = "fr";
 
-        // --- 3. CHARGEMENT AUTOMATIQUE ---
         window.onload = function() {
             changeLanguage('fr');
             fetch(`${SCRIPT_URL}?action=get_data&sn=${serialNumber}`)
@@ -185,44 +198,57 @@
                 .then(data => {
                     if (data.error) { document.getElementById('statusText').innerText = "Inconnu"; return; }
                     
+                    // Retire l'effet Skeleton et injecte les vraies données
+                    ['installText', 'maintenanceText', 'modelText', 'flowText'].forEach(id => {
+                        document.getElementById(id).classList.remove('skeleton');
+                    });
+
                     document.getElementById('installText').innerText = data.install_date || "-";
                     document.getElementById('maintenanceText').innerText = data.maintenance_date || "-";
                     document.getElementById('modelText').innerText = data.model || "-";
                     document.getElementById('flowText').innerText = data.flow || "-";
+                    
                     manualUrl = data.manual_link;
                     videoUrl = data.video_link;
 
                     // Historique
                     const histContainer = document.getElementById('historyList');
                     if(data.history) {
-                        const items = data.history.split(','); // Sépare l'historique par les virgules
-                        histContainer.innerHTML = items.map(item => `<div class="history-item">${item}</div>`).join('');
+                        histContainer.innerHTML = data.history.split(',').map(item => `<div class="history-item">- ${item.trim()}</div>`).join('');
                     } else {
-                        histContainer.innerHTML = "<div class='history-item'>Aucun historique</div>";
+                        histContainer.innerHTML = "<div class='history-item'>Aucun historique enregistré</div>";
                     }
 
-                    // Statut
                     if(data.maintenance_date) {
-                        const maintDate = new Date(data.maintenance_date);
-                        isStatusOk = maintDate >= new Date();
+                        isStatusOk = new Date(data.maintenance_date) >= new Date();
                     }
                     updateStatusText();
                 });
         };
 
-        // --- 4. FONCTIONS DE TRADUCTION ---
+        // --- NOUVEAU : FONCTION DU CODE SECRET ---
+        function unlockTechMode() {
+            const code = prompt("Veuillez saisir le code technicien (4 chiffres) :");
+            if(code === "1234") {
+                document.getElementById('techPanel').style.display = 'block';
+                document.querySelector('.tech-lock-btn').style.display = 'none';
+            } else if(code !== null) {
+                alert("Code incorrect. Accès refusé.");
+            }
+        }
+
         function changeLanguage(lang) {
             currentLang = lang;
             document.body.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                el.innerText = dict[lang][el.getAttribute('data-i18n')];
-            });
-            updateStatusText(); // Met à jour le texte du statut dans la bonne langue
+            document.querySelectorAll('[data-i18n]').forEach(el => el.innerText = dict[lang][el.getAttribute('data-i18n')]);
+            updateStatusText();
         }
 
         function updateStatusText() {
             const statusText = document.getElementById('statusText');
             const statusDot = document.getElementById('statusDot');
+            if(document.getElementById('installText').classList.contains('skeleton')) return; // Ne pas maj si en chargement
+            
             if(isStatusOk) {
                 statusText.innerText = dict[currentLang].statusOk;
                 statusText.style.color = "var(--success)"; statusDot.style.backgroundColor = "var(--success)";
@@ -232,21 +258,10 @@
             }
         }
 
-        // --- 5. MODALES ET ACTIONS ---
-        function toggleHistory() {
-            const content = document.getElementById('historyList');
-            content.style.maxHeight = content.style.maxHeight ? null : content.scrollHeight + "px";
-        }
         function openManual() { if(manualUrl) window.open(manualUrl, '_blank'); else alert("Pas de manuel"); }
-        function openVideo() { 
-            if(videoUrl) { document.getElementById('videoFrame').src = videoUrl; document.getElementById('videoModal').style.display = 'flex'; }
-            else alert("Pas de vidéo disponible"); 
-        }
+        function openVideo() { if(videoUrl) { document.getElementById('videoFrame').src = videoUrl; document.getElementById('videoModal').style.display = 'flex'; } else alert("Pas de vidéo disponible"); }
         function openReportModal() { document.getElementById('reportModal').style.display = 'flex'; }
-        function closeModals() { 
-            document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); 
-            document.getElementById('videoFrame').src = ""; // Coupe la vidéo
-        }
+        function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); document.getElementById('videoFrame').src = ""; }
 
         function submitReport() {
             const email = document.getElementById('reportEmail').value;
@@ -254,8 +269,6 @@
             if(!email || !message) return alert("Remplissez tous les champs.");
 
             const btn = event.target; btn.innerText = "⏳...";
-            
-            // Envoi au script Google (Onglet Incidents)
             fetch(`${SCRIPT_URL}?action=report&sn=${serialNumber}&email=${encodeURIComponent(email)}&message=${encodeURIComponent(message)}`)
                 .then(r => r.json())
                 .then(res => {
