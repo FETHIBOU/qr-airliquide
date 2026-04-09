@@ -3,305 +3,538 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VitalAire & Air Liquide - Smart Dashboard</title>
+    <title>VitalAire & Air Liquide - Portail Intelligent</title>
+    <!-- Polices : Poppins pour le design moderne et Cairo pour l'Arabe -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* --- VARIABLES COULEURS --- */
+        /* --- SYSTÈME DE DESIGN (NEUMORPHISME) --- */
         :root {
-            --bg: #e0e5ec; --light-shadow: #ffffff; --dark-shadow: #a3b1c6;
-            --text-main: #2c3e50; --text-data: #44476a;
-            --accent: #007BFF; --danger: #d92323; --success: #28a745; --warning: #f39c12;
+            --bg: #e0e5ec;
+            --light-shadow: #ffffff;
+            --dark-shadow: #a3b1c6;
+            --text-main: #2c3e50;
+            --text-data: #44476a;
+            --accent: #007BFF;
+            --danger: #d92323;
+            --success: #28a745;
+            --warning: #f39c12;
+            --card-glass: rgba(224, 229, 236, 0.8);
         }
+
         [data-theme="dark"] {
-            --bg: #1d1f23; --light-shadow: #2b2e34; --dark-shadow: #0f1013;
-            --text-main: #c9d1d9; --text-data: #e1e8ed;
-            --accent: #4dabff; --danger: #ff4d4d; --success: #00e676; --warning: #f1c40f;
+            --bg: #1d1f23;
+            --light-shadow: #2b2e34;
+            --dark-shadow: #0f1013;
+            --text-main: #c9d1d9;
+            --text-data: #e1e8ed;
+            --accent: #4dabff;
+            --danger: #ff4d4d;
+            --success: #00e676;
+            --warning: #f1c40f;
+            --card-glass: rgba(29, 31, 35, 0.8);
         }
 
         body {
-            background-color: var(--bg); color: var(--text-main);
-            font-family: 'Poppins', sans-serif; margin: 0; padding: 20px;
-            display: flex; justify-content: center; align-items: flex-start;
-            min-height: 100vh; transition: background 0.5s ease;
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            transition: background 0.5s ease, color 0.5s ease;
         }
+
         body[dir="rtl"] { font-family: 'Cairo', sans-serif; }
 
-        /* CONTRÔLES HAUT DE PAGE */
-        .controls { position: fixed; top: 15px; width: 90%; max-width: 600px; display: flex; justify-content: space-between; z-index: 100; left: 50%; transform: translateX(-50%); }
-        .lang-selector select, .theme-switch {
-            background: var(--bg); color: var(--text-main); border: none; padding: 10px 15px; border-radius: 15px;
-            box-shadow: 4px 4px 8px var(--dark-shadow), -4px -4px 8px var(--light-shadow); font-weight: 600; cursor: pointer; outline: none;
+        /* --- CONTRÔLES HAUT DE PAGE --- */
+        .page-controls {
+            position: fixed;
+            top: 20px;
+            width: 90%;
+            max-width: 550px;
+            display: flex;
+            justify-content: space-between;
+            z-index: 100;
         }
 
-        /* CARTE PRINCIPALE */
+        .ctrl-btn {
+            background: var(--bg);
+            color: var(--text-main);
+            border: none;
+            padding: 10px 15px;
+            border-radius: 12px;
+            box-shadow: 4px 4px 8px var(--dark-shadow), -4px -4px 8px var(--light-shadow);
+            cursor: pointer;
+            font-weight: 600;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ctrl-btn:active { box-shadow: inset 2px 2px 5px var(--dark-shadow); }
+
+        /* --- CARTE PRINCIPALE --- */
         .card {
-            background: rgba(224, 229, 236, 0.8); backdrop-filter: blur(10px);
-            padding: 40px 30px; border-radius: 30px; margin-top: 60px;
+            background: var(--card-glass);
+            backdrop-filter: blur(12px);
+            padding: 40px 30px;
+            border-radius: 40px;
             box-shadow: 20px 20px 60px var(--dark-shadow), -20px -20px 60px var(--light-shadow);
-            width: 100%; max-width: 500px; border: 1px solid rgba(255,255,255,0.2);
+            width: 100%;
+            max-width: 500px;
+            margin-top: 70px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
         }
 
-        .logos-container { display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 20px; }
-        .logo-al { font-weight: 700; font-size: 18px; color: var(--danger); }
-        .logo-vitalaire { height: 22px; }
-        [data-theme="dark"] .logo-vitalaire { filter: brightness(0) invert(1); }
+        /* --- LOGOS --- */
+        .brand-header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .logo-al { font-weight: 700; font-size: 18px; color: #d92323; }
+        .logo-va { height: 24px; transition: filter 0.3s; }
+        [data-theme="dark"] .logo-va { filter: brightness(0) invert(1); }
 
-        h1 { text-align: center; font-size: 1.4rem; margin-bottom: 15px; }
-        .status-badge { display: flex; align-items: center; justify-content: center; padding: 8px 15px; border-radius: 20px; font-size: 12px; font-weight: 700; margin: 0 auto 30px auto; width: max-content; background: var(--bg); box-shadow: inset 3px 3px 6px var(--dark-shadow), inset -3px -3px 6px var(--light-shadow); }
-        .status-dot { width: 10px; height: 10px; border-radius: 50%; margin: 0 8px; background-color: gray; }
+        /* --- BARRE DE RECHERCHE --- */
+        .search-area {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+        .search-input {
+            flex: 1;
+            padding: 14px;
+            border-radius: 15px;
+            border: none;
+            background: var(--bg);
+            box-shadow: inset 4px 4px 8px var(--dark-shadow), inset -4px -4px 8px var(--light-shadow);
+            color: var(--text-main);
+            font-weight: 600;
+            outline: none;
+        }
 
-        /* GRILLE DE DONNÉES & SKELETON */
-        .data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .full-width { grid-column: 1 / -1; }
-        .label { font-size: 11px; font-weight: 700; color: #a3b1c6; text-transform: uppercase; margin-bottom: 5px; display: block; padding: 0 10px; }
-        .data-box { padding: 12px 15px; border-radius: 12px; background: var(--bg); box-shadow: inset 4px 4px 8px var(--dark-shadow), inset -4px -4px 8px var(--light-shadow); font-weight: 600; font-size: 14px; min-height: 45px; display: flex; align-items: center; position: relative; overflow: hidden;}
-        
+        /* --- STATUT ET TITRE --- */
+        h1 { text-align: center; font-size: 1.3rem; margin-bottom: 10px; }
+        .status-pill {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            margin: 0 auto 30px auto;
+            width: max-content;
+            background: var(--bg);
+            box-shadow: inset 3px 3px 6px var(--dark-shadow), inset -3px -3px 6px var(--light-shadow);
+        }
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; margin: 0 8px; background-color: #888; }
+
+        /* --- GRILLE DE DONNÉES ET SKELETON --- */
+        .data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px; }
+        .full-col { grid-column: 1 / -1; }
+        .data-label { font-size: 10px; font-weight: 700; color: #a3b1c6; text-transform: uppercase; margin-bottom: 6px; padding: 0 10px; }
+        .data-value {
+            padding: 14px;
+            border-radius: 15px;
+            background: var(--bg);
+            box-shadow: inset 5px 5px 10px var(--dark-shadow), inset -5px -5px 10px var(--light-shadow);
+            font-weight: 600;
+            font-size: 14px;
+            min-height: 48px;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
         .skeleton {
             background: linear-gradient(90deg, var(--bg) 25%, var(--dark-shadow) 50%, var(--bg) 75%);
-            background-size: 200% 100%; animation: loadingPulse 1.5s infinite; color: transparent !important; border-radius: 5px;
+            background-size: 200% 100%;
+            animation: skeletonPulse 1.5s infinite;
+            color: transparent !important;
         }
-        @keyframes loadingPulse { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        @keyframes skeletonPulse {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
 
-        /* ZONE TECHNICIEN */
-        .tech-panel { display: none; margin-top: 20px; border-top: 2px dashed var(--dark-shadow); padding-top: 20px;}
-        .history-item { padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.1); font-size: 13px; color: var(--text-data);}
+        /* --- BOUTONS --- */
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .action-btn {
+            padding: 16px;
+            border-radius: 18px;
+            border: none;
+            background: var(--bg);
+            box-shadow: 6px 6px 12px var(--dark-shadow), -6px -6px 12px var(--light-shadow);
+            cursor: pointer;
+            font-weight: 700;
+            color: var(--text-main);
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.2s ease;
+        }
+        .action-btn:active { box-shadow: inset 4px 4px 8px var(--dark-shadow); transform: scale(0.98); }
+        .full-btn { grid-column: 1 / -1; }
+        .text-accent { color: var(--accent); }
+        .text-danger { color: var(--danger); }
+        .text-warning { color: var(--warning); }
 
-        /* BOUTONS */
-        .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px;}
-        .btn { padding: 12px; border-radius: 12px; background: var(--bg); border: none; font-weight: 700; cursor: pointer; box-shadow: 6px 6px 12px var(--dark-shadow), -6px -6px 12px var(--light-shadow); color: var(--text-main); display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 13px;}
-        .btn:active { box-shadow: inset 4px 4px 8px var(--dark-shadow), inset -4px -4px 8px var(--light-shadow); }
-        .btn-full { grid-column: 1 / -1; }
-        .text-danger { color: var(--danger); } .text-blue { color: var(--accent); } .text-warning { color: var(--warning); }
+        /* --- ZONE ADMINISTRATION --- */
+        .admin-zone {
+            display: none;
+            margin-top: 35px;
+            border-top: 2px dashed var(--dark-shadow);
+            padding-top: 25px;
+            animation: fadeIn 0.5s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .history-list { font-size: 12px; color: var(--text-data); max-height: 120px; overflow-y: auto; margin-bottom: 20px; }
+        .history-entry { padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.05); }
 
-        /* MODALES */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: var(--bg); padding: 30px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center; }
-        .modal input, .modal textarea { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: none; background: var(--bg); box-shadow: inset 3px 3px 6px var(--dark-shadow), inset -3px -3px 6px var(--light-shadow); color: var(--text-main); outline: none; }
-        .modal iframe { width: 100%; height: 250px; border: none; border-radius: 15px; margin-bottom: 15px; }
+        /* --- MODALES --- */
+        .custom-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-body {
+            background: var(--bg);
+            padding: 30px;
+            border-radius: 30px;
+            width: 90%;
+            max-width: 420px;
+            text-align: center;
+            box-shadow: 10px 10px 30px rgba(0,0,0,0.3);
+        }
+        .modal-body input, .modal-body textarea {
+            width: 100%; padding: 12px; margin: 10px 0; border-radius: 12px; border: none;
+            background: var(--bg); box-shadow: inset 3px 3px 6px var(--dark-shadow); color: inherit;
+            box-sizing: border-box; outline: none;
+        }
+        .video-container { width: 100%; aspect-ratio: 16/9; border-radius: 15px; overflow: hidden; margin-bottom: 20px; }
+        .video-container iframe { width: 100%; height: 100%; border: none; }
 
-        /* IMPRESSION PDF */
+        /* --- MESSAGES TOAST --- */
+        #toast {
+            position: fixed;
+            bottom: 30px;
+            background: var(--text-main);
+            color: var(--bg);
+            padding: 12px 25px;
+            border-radius: 50px;
+            display: none;
+            z-index: 2000;
+            font-weight: 600;
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } }
+
+        /* --- IMPRESSION --- */
         @media print {
-            body { background: white; padding: 0; }
-            .card { box-shadow: none; border: 2px solid #000; padding: 20px; margin: 0; }
-            .controls, .actions, .theme-switch, .tech-lock-btn, .search-container { display: none !important; }
-            .tech-panel { display: block !important; border-top: 1px solid #000; }
+            body { background: white; padding: 0; color: black; }
+            .card { box-shadow: none; border: 1px solid #000; margin: 0; width: 100%; max-width: none; }
+            .page-controls, .search-area, .btn-group, .theme-switch, #techToggle { display: none !important; }
+            .admin-zone { display: block !important; border: none; }
         }
     </style>
 </head>
 <body data-theme="light">
 
-    <div class="controls">
-        <div class="lang-selector">
-            <select id="langSwitch" onchange="changeLanguage(this.value)">
-                <option value="fr">🇫🇷 FR</option>
-                <option value="en">🇬🇧 EN</option>
-                <option value="ar">🇹🇳 AR</option>
-            </select>
-        </div>
-        <button class="theme-switch" onclick="toggleTheme()">🌓</button>
+    <!-- Toast pour les notifications -->
+    <div id="toast"></div>
+
+    <!-- Contrôles Haut de page -->
+    <div class="page-controls">
+        <select class="ctrl-btn" id="langSelect" onchange="applyLanguage(this.value)">
+            <option value="fr">🇫🇷 FR</option>
+            <option value="en">🇬🇧 EN</option>
+            <option value="ar">🇹🇳 AR</option>
+        </select>
+        <button class="ctrl-btn" onclick="toggleTheme()">🌓</button>
     </div>
 
-    <div class="card">
-        <div class="logos-container">
+    <!-- CARTE PRINCIPALE -->
+    <div class="card" id="mainCard">
+        <div class="brand-header">
             <div class="logo-al">Air Liquide</div>
-            <img src="https://fr.vitalaire.com/sites/vitalaire_fr/files/2025-03/logo-vitalaire_0.svg" class="logo-vitalaire">
+            <img src="https://fr.vitalaire.com/sites/vitalaire_fr/files/2025-03/logo-vitalaire_0.svg" alt="VitalAire" class="logo-va">
         </div>
-        
+
+        <!-- Recherche manuelle -->
+        <div class="search-area">
+            <input type="text" id="manualSN" class="search-input" placeholder="SN: OXY-12347">
+            <button class="action-btn text-accent" onclick="manualFetch()" style="padding: 0 20px;">🔍</button>
+        </div>
+
         <h1 data-i18n="title">Concentrateur d'Oxygène</h1>
 
-        <div class="search-container" style="display: flex; gap: 10px; margin-bottom: 20px;">
-            <input type="text" id="searchInput" placeholder="Saisir n° de série (ex: OXY-12347)" style="flex: 1; padding: 12px; border-radius: 12px; border: none; background: var(--bg); box-shadow: inset 4px 4px 8px var(--dark-shadow), inset -4px -4px 8px var(--light-shadow); color: var(--text-main); font-weight: 600; outline: none;">
-            <button class="btn text-blue" onclick="searchMachine()" style="padding: 12px 20px;">🔍</button>
-        </div>
-
-        <div class="status-badge">
+        <div class="status-pill">
             <span class="status-dot" id="statusDot"></span>
-            <span id="statusText" data-i18n="loading">Recherche en cours...</span>
+            <span id="statusLabel" data-i18n="loading">Chargement...</span>
         </div>
 
         <div class="data-grid">
-            <div class="full-width">
-                <span class="label" data-i18n="sn">Numéro de Série</span>
-                <div class="data-box" id="serialText">---</div>
+            <div class="full-col">
+                <span class="data-label" data-i18n="sn">Numéro de Série</span>
+                <div class="data-value" id="dispSN">---</div>
             </div>
             <div>
-                <span class="label" data-i18n="model">Modèle</span>
-                <div class="data-box skeleton" id="modelText">chargement</div>
+                <span class="data-label" data-i18n="model">Modèle</span>
+                <div class="data-value skeleton" id="dispModel">...</div>
             </div>
             <div>
-                <span class="label" data-i18n="flow">Débit configuré</span>
-                <div class="data-box skeleton" id="flowText">chargement</div>
+                <span class="data-label" data-i18n="flow">Débit</span>
+                <div class="data-value skeleton" id="dispFlow">...</div>
             </div>
-            <div class="full-width">
-                <span class="label" data-i18n="install">Date d'installation</span>
-                <div class="data-box skeleton" id="installText">chargement</div>
+            <div class="full-col">
+                <span class="data-label" data-i18n="install">Installation</span>
+                <div class="data-value skeleton" id="dispInstall">...</div>
             </div>
-            <div class="full-width">
-                <span class="label" data-i18n="maint">Prochaine Maintenance</span>
-                <div class="data-box skeleton" id="maintenanceText">chargement</div>
-            </div>
-        </div>
-
-        <div class="actions">
-            <button class="btn text-blue" onclick="openManual()"><span data-i18n="btnDoc">Manuel</span></button>
-            <button class="btn" onclick="openVideo()"><span data-i18n="btnVideo">Tutoriel</span></button>
-            <button class="btn btn-full text-danger" onclick="openReportModal()"><span data-i18n="btnReport">Signaler incident</span></button>
-        </div>
-
-        <br>
-        
-        <button class="btn btn-full tech-lock-btn text-warning" onclick="unlockTechMode()">🔒 Accès Technicien</button>
-        <div class="tech-panel" id="techPanel">
-            <h3 style="font-size: 14px; margin-bottom: 10px;" data-i18n="history">Historique & Rapports</h3>
-            <div id="historyList"></div>
-            <button class="btn btn-full" style="margin-top: 15px;" onclick="window.print()">🖨️ Générer Fiche PDF</button>
-        </div>
-    </div>
-
-    <div class="modal" id="videoModal">
-        <div class="modal-content">
-            <iframe id="videoFrame" src="" allowfullscreen></iframe>
-            <button class="btn btn-full" onclick="closeModals()" data-i18n="close">Fermer</button>
-        </div>
-    </div>
-
-    <div class="modal" id="reportModal">
-        <div class="modal-content">
-            <h2 data-i18n="formTitle">Signaler un problème</h2>
-            <input type="email" id="reportEmail" placeholder="Votre Email" required>
-            <textarea id="reportMessage" rows="4" placeholder="Décrivez le problème..." required></textarea>
-            <div class="actions" style="display:flex;">
-                <button class="btn" style="flex:1;" onclick="closeModals()" data-i18n="cancel">Annuler</button>
-                <button class="btn text-blue" style="flex:1;" onclick="submitReport()" data-i18n="send">Envoyer</button>
+            <div class="full-col">
+                <span class="data-label" data-i18n="maint">Prochaine Maintenance</span>
+                <div class="data-value skeleton" id="dispMaint">...</div>
             </div>
         </div>
-    </div>
 
-    <script>
-        // LIEN VERS VOTRE SCRIPT GOOGLE
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzmrvqe6z6NlzXmPgXS1HdFMwSm-cwScS2W7IcsQXzrvqYv5OTiCP6pdzkvZxWD3U0/exec";
-        
-        // RECUPERATION DU NUMERO DE SERIE VIA L'URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const serialNumber = urlParams.get('sn') || "OXY-12347";
-        document.getElementById('serialText').innerText = serialNumber;
+        <div class="btn-group">
+            <button class="action-btn text-accent" onclick="openManual()"><span data-i18n="btnManual">Manuel</span></button>
+            <button class="action-btn" onclick="openVideo()"><span data-i18n="btnVideo">Tutoriel</span></button>
+            <button class="action-btn full-btn text-danger" onclick="openReportModal()"><span data-i18n="btnReport">Signaler incident</span></button>
+        </div>
 
-        let manualUrl = ""; let videoUrl = ""; let isStatusOk = true;
+        <!-- Bouton Accès Tech -->
+        <button class="action-btn full-btn text-warning" style="margin-top: 25px;" id="techToggle" onclick="unlockAdmin()">🔒 Accès Technicien</button>
 
-        // DICTIONNAIRE DE TRADUCTION
-        const dict = {
-            fr: { title: "Concentrateur d'Oxygène", loading: "Recherche...", sn: "Numéro de Série", model: "Modèle", flow: "Débit", install: "Date d'installation", maint: "Prochaine Maintenance", history: "Historique & Rapports", btnDoc: "Manuel", btnVideo: "Tutoriel", btnReport: "Signaler un incident", statusOk: "EN SERVICE (CONFORME)", statusWarn: "MAINTENANCE REQUISE", formTitle: "Détail de la panne", send: "Envoyer", cancel: "Annuler", close: "Fermer" },
-            en: { title: "Oxygen Concentrator", loading: "Searching...", sn: "Serial Number", model: "Model", flow: "Flow Rate", install: "Installation Date", maint: "Next Maintenance", history: "History & Reports", btnDoc: "Manual", btnVideo: "Video", btnReport: "Report Incident", statusOk: "IN SERVICE (COMPLIANT)", statusWarn: "MAINTENANCE REQUIRED", formTitle: "Issue Details", send: "Send", cancel: "Cancel", close: "Close" },
-            ar: { title: "مُكثّف الأكسجين", loading: "جاري البحث...", sn: "الرقم التسلسلي", model: "الموديل", flow: "معدل التدفق", install: "تاريخ التركيب", maint: "الصيانة القادمة", history: "سجل الصيانة والتقارير", btnDoc: "الدليل", btnVideo: "فيديو", btnReport: "الإبلاغ عن عطل", statusOk: "في الخدمة (مطابق)", statusWarn: "صيانة مطلوبة", formTitle: "تفاصيل العطل", send: "إرسال", cancel: "إلغاء", close: "إغلاق" }
-        };
-        let currentLang = "fr";
-
-        // CHARGEMENT DES DONNÉES
-        window.onload = function() {
-            changeLanguage('fr');
-            fetch(`${SCRIPT_URL}?action=get_data&sn=${serialNumber}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.error) { document.getElementById('statusText').innerText = "Inconnu"; return; }
-                    
-                    // Retire l'effet de chargement (Skeleton)
-                    ['installText', 'maintenanceText', 'modelText', 'flowText'].forEach(id => {
-                        document.getElementById(id).classList.remove('skeleton');
-                    });
-
-                    // Affiche les données
-                    document.getElementById('installText').innerText = data.install_date || "-";
-                    document.getElementById('maintenanceText').innerText = data.maintenance_date || "-";
-                    document.getElementById('modelText').innerText = data.model || "-";
-                    document.getElementById('flowText').innerText = data.flow || "-";
-                    
-                    manualUrl = data.manual_link;
-                    videoUrl = data.video_link;
-
-                    // Affiche l'historique
-                    const histContainer = document.getElementById('historyList');
-                    if(data.history) {
-                        histContainer.innerHTML = data.history.split(',').map(item => `<div class="history-item">- ${item.trim()}</div>`).join('');
-                    } else {
-                        histContainer.innerHTML = "<div class='history-item'>Aucun historique enregistré</div>";
-                    }
-
-                    // Vérifie le statut de maintenance
-                    if(data.maintenance_date) {
-                        isStatusOk = new Date(data.maintenance_date) >= new Date();
-                    }
-                    updateStatusText();
-                });
-        };
-
-        // FONCTION DE RECHERCHE MANUELLE
-        function searchMachine() {
-            const newSn = document.getElementById('searchInput').value.trim();
-            if (newSn) {
-                window.location.href = window.location.pathname + "?sn=" + newSn;
-            } else {
-                alert(dict[currentLang].sn + " ?");
-            }
-        }
-
-        // FONCTION CODE TECHNICIEN
-        function unlockTechMode() {
-            const code = prompt("Veuillez saisir le code technicien (4 chiffres) :");
-            if(code === "1234") { // Modifiez "1234" par votre vrai code
-                document.getElementById('techPanel').style.display = 'block';
-                document.querySelector('.tech-lock-btn').style.display = 'none';
-            } else if(code !== null) {
-                alert("Code incorrect. Accès refusé.");
-            }
-        }
-
-        // FONCTIONS MULTILINGUES
-        function changeLanguage(lang) {
-            currentLang = lang;
-            document.body.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
-            document.querySelectorAll('[data-i18n]').forEach(el => el.innerText = dict[lang][el.getAttribute('data-i18n')]);
-            updateStatusText();
-        }
-
-        function updateStatusText() {
-            const statusText = document.getElementById('statusText');
-            const statusDot = document.getElementById('statusDot');
-            if(document.getElementById('installText').classList.contains('skeleton')) return;
+        <!-- ZONE ADMINISTRATION -->
+        <div class="admin-zone" id="adminZone">
+            <h3 style="font-size: 14px; margin-bottom: 10px;" data-i18n="history">Historique & Admin</h3>
+            <div class="history-list" id="dispHistory"></div>
             
-            if(isStatusOk) {
-                statusText.innerText = dict[currentLang].statusOk;
-                statusText.style.color = "var(--success)"; statusDot.style.backgroundColor = "var(--success)";
-            } else {
-                statusText.innerText = dict[currentLang].statusWarn;
-                statusText.style.color = "var(--danger)"; statusDot.style.backgroundColor = "var(--danger)";
+            <div class="btn-group">
+                <button class="action-btn" onclick="exportData()">📊 Export CSV</button>
+                <button class="action-btn" onclick="generateQRSheet()">🖼️ Planche QR</button>
+                <button class="action-btn full-btn" onclick="window.print()">🖨️ Imprimer Fiche</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL VIDÉO -->
+    <div class="custom-modal" id="videoModal">
+        <div class="modal-body">
+            <div class="video-container">
+                <iframe id="videoIframe" src="" allowfullscreen></iframe>
+            </div>
+            <button class="action-btn full-btn" onclick="closeModals()" data-i18n="close">Fermer</button>
+        </div>
+    </div>
+
+    <!-- MODAL RAPPORT -->
+    <div class="custom-modal" id="reportModal">
+        <div class="modal-body">
+            <h2 data-i18n="reportTitle">Détail du problème</h2>
+            <input type="email" id="repEmail" placeholder="Votre Email">
+            <textarea id="repMsg" rows="4" placeholder="Description de la panne..."></textarea>
+            <div class="btn-group">
+                <button class="action-btn" onclick="closeModals()" data-i18n="cancel">Annuler</button>
+                <button class="action-btn text-accent" onclick="sendReport()" data-i18n="send">Envoyer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script>
+        // --- CONFIGURATION ---
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzmrvqe6z6NlzXmPgXS1HdFMwSm-cwScS2W7IcsQXzrvqYv5OTiCP6pdzkvZxWD3U0/exec";
+        const urlParams = new URLSearchParams(window.location.search);
+        let activeSN = urlParams.get('sn') || "OXY-12347";
+        let manualURL = "";
+        let videoURL = "";
+        let isMaintOk = true;
+
+        // --- TRADUCTIONS ---
+        const translations = {
+            fr: { title: "Concentrateur d'Oxygène", loading: "Recherche...", sn: "Numéro de Série", model: "Modèle", flow: "Débit", install: "Installation", maint: "Prochaine Maintenance", history: "Historique & Admin", btnManual: "Manuel", btnVideo: "Tutoriel", btnReport: "Signaler incident", close: "Fermer", cancel: "Annuler", send: "Envoyer", reportTitle: "Détail du problème", statusOk: "EN SERVICE (CONFORME)", statusWarn: "MAINTENANCE REQUISE", toastSuccess: "Rapport envoyé !", toastError: "Erreur lors de l'envoi." },
+            en: { title: "Oxygen Concentrator", loading: "Searching...", sn: "Serial Number", model: "Model", flow: "Flow Rate", install: "Installation Date", maint: "Next Maintenance", history: "History & Admin", btnManual: "Manual", btnVideo: "Tutorial", btnReport: "Report Issue", close: "Close", cancel: "Cancel", send: "Send", reportTitle: "Issue details", statusOk: "IN SERVICE (COMPLIANT)", statusWarn: "MAINTENANCE REQUIRED", toastSuccess: "Report sent!", toastError: "Network error." },
+            ar: { title: "مُكثّف الأكسجين", loading: "جاري البحث...", sn: "الرقم التسلسلي", model: "الموديل", flow: "معدل التدفق", install: "تاريخ التركيب", maint: "الصيانة القادمة", history: "السجل والإدارة", btnManual: "الدليل", btnVideo: "فيديو", btnReport: "الإبلاغ عن عطل", close: "إغلاق", cancel: "إلغاء", send: "إرسال", reportTitle: "تفاصيل العطل", statusOk: "في الخدمة (مطابق)", statusWarn: "صيانة مطلوبة", toastSuccess: "تم الإرسال!", toastError: "خطأ في الشبكة." }
+        };
+        let lang = "fr";
+
+        // --- INITIALISATION ---
+        window.onload = () => {
+            applyLanguage('fr');
+            fetchData(activeSN);
+        };
+
+        function fetchData(sn) {
+            document.getElementById('dispSN').innerText = sn;
+            // Reset skeletons
+            ['dispModel', 'dispFlow', 'dispInstall', 'dispMaint'].forEach(id => document.getElementById(id).classList.add('skeleton'));
+
+            fetch(`${SCRIPT_URL}?action=get_data&sn=${sn}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (data.error) {
+                        showToast(data.error);
+                        document.getElementById('statusLabel').innerText = "Inconnu";
+                        return;
+                    }
+
+                    // Remove skeletons
+                    ['dispModel', 'dispFlow', 'dispInstall', 'dispMaint'].forEach(id => document.getElementById(id).classList.remove('skeleton'));
+
+                    document.getElementById('dispModel').innerText = data.model || "-";
+                    document.getElementById('dispFlow').innerText = data.flow || "-";
+                    document.getElementById('dispInstall').innerText = data.install_date || "-";
+                    document.getElementById('dispMaint').innerText = data.maintenance_date || "-";
+                    
+                    manualURL = data.manual_link;
+                    videoURL = data.video_link;
+
+                    // History
+                    const hBox = document.getElementById('dispHistory');
+                    hBox.innerHTML = data.history ? 
+                        data.history.split(',').map(h => `<div class="history-entry">- ${h.trim()}</div>`).join('') :
+                        "<div class='history-entry'>Aucun historique</div>";
+
+                    // Status calc
+                    if(data.maintenance_date) {
+                        isMaintOk = new Date(data.maintenance_date) >= new Date();
+                    }
+                    updateStatusUI();
+                })
+                .catch(() => showToast("Erreur de connexion base"));
+        }
+
+        // --- ACTIONS ---
+        function manualFetch() {
+            const val = document.getElementById('manualSN').value.trim();
+            if(val) {
+                activeSN = val;
+                fetchData(val);
+                window.history.pushState({}, '', `?sn=${val}`);
             }
         }
 
-        // ACTIONS DES BOUTONS ET MODALES
-        function openManual() { if(manualUrl) window.open(manualUrl, '_blank'); else alert("Pas de manuel"); }
-        function openVideo() { if(videoUrl) { document.getElementById('videoFrame').src = videoUrl; document.getElementById('videoModal').style.display = 'flex'; } else alert("Pas de vidéo disponible"); }
-        function openReportModal() { document.getElementById('reportModal').style.display = 'flex'; }
-        function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); document.getElementById('videoFrame').src = ""; }
+        function unlockAdmin() {
+            const pin = prompt("Code Technicien :");
+            if (pin === "1234") {
+                document.getElementById('adminZone').style.display = 'block';
+                document.getElementById('techToggle').style.display = 'none';
+                showToast("Accès Admin autorisé");
+            } else if (pin !== null) showToast("Code incorrect");
+        }
 
-        function submitReport() {
-            const email = document.getElementById('reportEmail').value;
-            const message = document.getElementById('reportMessage').value;
-            if(!email || !message) return alert("Remplissez tous les champs.");
-
-            const btn = event.target; btn.innerText = "⏳...";
-            fetch(`${SCRIPT_URL}?action=report&sn=${serialNumber}&email=${encodeURIComponent(email)}&message=${encodeURIComponent(message)}`)
+        function exportData() {
+            fetch(`${SCRIPT_URL}?action=get_all`)
                 .then(r => r.json())
-                .then(res => {
-                    alert("Incident signalé avec succès !");
-                    closeModals();
-                    btn.innerText = dict[currentLang].send;
-                    document.getElementById('reportMessage').value = "";
+                .then(data => {
+                    let csv = "SN,Modele,Debit,Installation,Maintenance\n";
+                    data.forEach(m => { csv += `${m.sn},${m.model},${m.flow},${m.install},${m.maint}\n`; });
+                    const blob = new Blob([csv], {type: 'text/csv'});
+                    const a = document.createElement('a');
+                    a.href = URL.createObjectURL(blob);
+                    a.download = `inventaire_vitalaire_${new Date().toLocaleDateString()}.csv`;
+                    a.click();
                 });
+        }
+
+        function generateQRSheet() {
+            fetch(`${SCRIPT_URL}?action=get_all`)
+                .then(r => r.json())
+                .then(data => {
+                    const win = window.open('', '_blank');
+                    win.document.write('<html><head><title>QR Codes Planche</title></head><body style="display:flex; flex-wrap:wrap; gap:30px; padding:40px; font-family:sans-serif;">');
+                    data.forEach(m => {
+                        const url = `${window.location.origin}${window.location.pathname}?sn=${m.sn}`;
+                        const qr = `https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(url)}`;
+                        win.document.write(`<div style="border:1px solid #ddd; padding:15px; text-align:center; border-radius:10px;">
+                            <img src="${qr}"><br><b style="font-size:14px;">${m.sn}</b><br><small>${m.model}</small></div>`);
+                    });
+                    win.document.write('</body></html>');
+                });
+        }
+
+        // --- UI HELPERS ---
+        function applyLanguage(l) {
+            lang = l;
+            document.body.setAttribute('dir', l === 'ar' ? 'rtl' : 'ltr');
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                el.innerText = translations[l][el.getAttribute('data-i18n')];
+            });
+            updateStatusUI();
+        }
+
+        function updateStatusUI() {
+            const label = document.getElementById('statusLabel');
+            const dot = document.getElementById('statusDot');
+            if(label.innerText === "Chargement..." || label.innerText === "Recherche...") return;
+
+            if (isMaintOk) {
+                label.innerText = translations[lang].statusOk;
+                label.style.color = "var(--success)";
+                dot.style.backgroundColor = "var(--success)";
+            } else {
+                label.innerText = translations[lang].statusWarn;
+                label.style.color = "var(--danger)";
+                dot.style.backgroundColor = "var(--danger)";
+            }
         }
 
         function toggleTheme() {
-            const body = document.body;
-            body.setAttribute('data-theme', body.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
+            const b = document.body;
+            b.setAttribute('data-theme', b.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.style.display = 'block';
+            setTimeout(() => t.style.display = 'none', 3000);
+        }
+
+        // Modals
+        function openManual() { if(manualURL) window.open(manualURL, '_blank'); else showToast("Doc absente"); }
+        function openVideo() { 
+            if(videoURL) {
+                document.getElementById('videoIframe').src = videoURL;
+                document.getElementById('videoModal').style.display = 'flex';
+            } else showToast("Vidéo absente");
+        }
+        function openReportModal() { document.getElementById('reportModal').style.display = 'flex'; }
+        function closeModals() { 
+            document.querySelectorAll('.custom-modal').forEach(m => m.style.display = 'none');
+            document.getElementById('videoIframe').src = "";
+        }
+
+        function sendReport() {
+            const e = document.getElementById('repEmail').value;
+            const m = document.getElementById('repMsg').value;
+            if(!e || !m) return showToast("Champs requis");
+            
+            fetch(`${SCRIPT_URL}?action=report&sn=${activeSN}&email=${encodeURIComponent(e)}&message=${encodeURIComponent(m)}`)
+                .then(() => {
+                    showToast(translations[lang].toastSuccess);
+                    closeModals();
+                })
+                .catch(() => showToast(translations[lang].toastError));
         }
     </script>
 </body>
