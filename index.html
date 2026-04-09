@@ -290,11 +290,13 @@
         </div>
     </div>
 
-    <script>
+   <script>
         // --- 1. CONFIGURATION ---
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzmrvqe6z6NlzXmPgXS1HdFMwSm-cwScS2W7IcsQXzrvqYv5OTiCP6pdzkvZxWD3U0/exec";
         const serialNumber = document.getElementById('serialText').innerText.trim();
-        let manualUrl = ""; // Sera rempli par la base de données
+        
+        let manualUrl = ""; 
+        let supportEmail = "support@vitalaire.fr"; // E-mail par défaut au cas où la case est vide dans le sheet
 
         // --- 2. CHARGEMENT AUTOMATIQUE DES DONNÉES ---
         window.onload = function() {
@@ -312,6 +314,11 @@
                     document.getElementById('maintenanceText').innerText = data.maintenance_date || "Non définie";
                     document.getElementById('modelText').innerText = data.model || "Standard";
                     document.getElementById('flowText').innerText = data.flow || "-";
+                    
+                    // NOUVEAU : Récupération de l'e-mail depuis Google Sheet
+                    if (data.support_email) {
+                        supportEmail = data.support_email;
+                    }
                     
                     // Calcul du Statut (En règle ou Maintenance dépassée)
                     checkStatus(data.maintenance_date);
@@ -342,18 +349,15 @@
                 return;
             }
 
-            // Convertir la date de maintenance en vraie date Javascript
             const maintDate = new Date(maintenanceDateStr);
             const today = new Date();
 
             if (maintDate < today) {
-                // La maintenance est dépassée
                 statusDot.style.backgroundColor = "var(--danger)";
                 statusDot.style.boxShadow = "0 0 10px var(--danger)";
                 statusText.innerText = "MAINTENANCE REQUISE";
                 statusText.style.color = "var(--danger)";
             } else {
-                // Tout va bien
                 statusDot.style.backgroundColor = "var(--success)";
                 statusDot.style.boxShadow = "0 0 10px var(--success)";
                 statusText.innerText = "EN SERVICE (CONFORME)";
@@ -366,12 +370,13 @@
             if(manualUrl) window.open(manualUrl, '_blank');
         });
 
+        // NOUVEAU : Le bouton utilise maintenant l'e-mail dynamique !
         document.getElementById('supportLink').addEventListener('click', function() {
-            // Prépare un email automatiquement adressé au support avec le numéro de série
-            const email = "support@vitalaire.fr"; // À changer par le vôtre
             const subject = encodeURIComponent(`Assistance requise - Machine ${serialNumber}`);
             const body = encodeURIComponent(`Bonjour,\n\nNous rencontrons un problème avec le concentrateur d'oxygène (SN: ${serialNumber}).\n\nMerci de nous recontacter.\n\nCordialement,`);
-            window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+            
+            // Ouvre la messagerie avec la bonne adresse récupérée du Google Sheet
+            window.location.href = `mailto:${supportEmail}?subject=${subject}&body=${body}`;
         });
 
         // --- 5. THEME SOMBRE ---
@@ -379,6 +384,7 @@
             const body = document.body;
             body.setAttribute('data-theme', body.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
         }
+    </script>
     </script>
 </body>
 </html>
